@@ -57,3 +57,30 @@
     (asserts! (is-eq tx-sender contract-owner) err-owner-only)
     (var-set platform-fee-recipient new-recipient)
     (ok true)))
+
+(define-public (toggle-contract-enabled)
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (var-set contract-enabled (not (var-get contract-enabled)))
+    (ok (var-get contract-enabled))))
+
+;; Update a user's average rating
+(define-private (update-user-rating (user principal) (new-rating uint))
+  (match (map-get? user-stats { user: user })
+    existing-stats 
+      (let (
+        (current-avg (get avg-rating existing-stats))
+        (current-count (get rating-count existing-stats))
+        (new-count (+ current-count u1))
+        (new-avg (if (is-eq current-count u0)
+                   new-rating
+                   (/ (+ (* current-avg current-count) new-rating) new-count)))
+      )
+        (map-set user-stats 
+          { user: user }
+          (merge existing-stats { 
+            avg-rating: new-avg,
+            rating-count: new-count,
+            last-activity: stacks-block-height
+          })))
+    false))
