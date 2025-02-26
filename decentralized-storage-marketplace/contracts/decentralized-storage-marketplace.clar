@@ -229,3 +229,20 @@
       }))
     
     (ok true)))
+
+;; Referral System
+(define-map referrals
+  { referrer: principal, referee: principal }
+  { 
+    active: bool,
+    reward-claimed: bool,
+    created-at: uint
+  }
+)
+
+;; 18. Emergency Shutdown Function
+(define-public (emergency-shutdown)
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (var-set contract-enabled false)
+    (ok true)))
