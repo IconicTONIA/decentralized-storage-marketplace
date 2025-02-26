@@ -25,3 +25,11 @@
 (define-constant err-no-extension (err u116))
 (define-constant err-already-reviewed (err u117))
 (define-constant err-invalid-location (err u118))
+
+;; Define contract variables
+(define-data-var platform-fee uint u50) ;; 5.0% (stored as 50 = 5.0%)
+(define-data-var platform-fee-recipient principal contract-owner)
+(define-data-var contract-enabled bool true)
+(define-data-var total-listings uint u0)
+(define-data-var total-payments uint u0)
+(define-data-var total-disputes uint u0)
