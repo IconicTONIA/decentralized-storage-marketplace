@@ -33,3 +33,27 @@
 (define-data-var total-listings uint u0)
 (define-data-var total-payments uint u0)
 (define-data-var total-disputes uint u0)
+
+(define-map user-stats
+  { user: principal }
+  { total-rentals: uint, 
+    total-listings: uint, 
+    avg-rating: uint,
+    rating-count: uint,
+    last-activity: uint
+  }
+)
+
+;; Contract control functions
+(define-public (set-platform-fee (new-fee uint))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (asserts! (<= new-fee u1000) err-fee-too-high) ;; Max 100% (1000 = 100.0%)
+    (var-set platform-fee new-fee)
+    (ok new-fee)))
+
+(define-public (set-fee-recipient (new-recipient principal))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (var-set platform-fee-recipient new-recipient)
+    (ok true)))
