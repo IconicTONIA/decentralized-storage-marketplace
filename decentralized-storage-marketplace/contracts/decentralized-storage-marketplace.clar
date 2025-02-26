@@ -103,3 +103,36 @@
     cancel-period: uint
   }))
   (and (not (get rented listing)) (get availability listing)))
+
+(define-private (is-review-for-listing (listing-id uint) (review {
+    id: uint,
+    listing-id: uint,
+    reviewer: principal,
+    rating: uint,
+    comment: (string-utf8 256),
+    timestamp: uint
+  }))
+  (is-eq (get listing-id review) listing-id))
+
+  ;; Get user statistics
+(define-read-only (get-user-stats (user principal))
+  (default-to 
+    { 
+      total-rentals: u0,
+      total-listings: u0,
+      avg-rating: u0,
+      rating-count: u0,
+      last-activity: u0
+    }
+    (map-get? user-stats { user: user })))
+
+;; Get contract status and metrics
+(define-read-only (get-contract-status)
+  {
+    enabled: (var-get contract-enabled),
+    fee-percentage: (/ (var-get platform-fee) u10),
+    fee-recipient: (var-get platform-fee-recipient),
+    total-listings: (var-get total-listings),
+    total-payments: (var-get total-payments),
+    total-disputes: (var-get total-disputes)
+  })
