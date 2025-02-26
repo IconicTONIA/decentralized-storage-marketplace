@@ -163,7 +163,7 @@
   }
 )
 
-;; 2. Reviews Data Structure
+;; Reviews Data Structure
 (define-map reviews
   { id: uint }
   {
@@ -178,7 +178,7 @@
 )
 
 
-;; 3. Dispute Resolution System
+;; Dispute Resolution System
 (define-map disputes
   { id: uint }
   {
@@ -195,3 +195,37 @@
   }
 )
 
+;; 6. Cancel Listing Function
+(define-public (cancel-listing (listing-id uint))
+  (let
+    ((listing (unwrap! (map-get? storage-listings { id: listing-id }) err-not-listed)))
+    
+    (asserts! (var-get contract-enabled) err-unauthorized)
+    (asserts! (is-eq tx-sender (get owner listing)) err-unauthorized)
+    (asserts! (not (get rented listing)) err-cannot-cancel)
+    
+    (map-set storage-listings
+      { id: listing-id }
+      (merge listing {
+        availability: false
+      }))
+    (ok true)))
+
+;; 10. Respond to Review Function
+(define-public (respond-to-review (review-id uint) (response (string-utf8 256)))
+  (let
+    ((review (unwrap! (map-get? reviews { id: review-id }) err-not-listed))
+     (listing (unwrap! (map-get? storage-listings { id: (get listing-id review) }) err-not-listed)))
+    
+    (asserts! (var-get contract-enabled) err-unauthorized)
+    (asserts! (is-eq tx-sender (get owner listing)) err-unauthorized)
+    (asserts! (is-none (get response review)) err-already-reviewed)
+    
+    (map-set reviews
+      { id: review-id }
+      (merge review {
+        response: (some response),
+        response-timestamp: (some stacks-block-height)
+      }))
+    
+    (ok true)))
