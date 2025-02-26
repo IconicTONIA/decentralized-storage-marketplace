@@ -246,3 +246,32 @@
     (asserts! (is-eq tx-sender contract-owner) err-owner-only)
     (var-set contract-enabled false)
     (ok true)))
+
+
+;; 19. Reinitialize Contract Function
+(define-public (reinitialize-contract (new-fee uint) (new-fee-recipient principal))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) err-owner-only)
+    (asserts! (<= new-fee u1000) err-fee-too-high)
+    
+    (var-set platform-fee new-fee)
+    (var-set platform-fee-recipient new-fee-recipient)
+    (var-set contract-enabled true)
+    
+    (ok true)))
+
+;; 21. Pricing Models
+(define-map pricing-tiers
+  { owner: principal, tier: uint }
+  { 
+    name: (string-utf8 32),
+    base-price: uint,
+    size-multiplier: uint,
+    duration-multiplier: uint,
+    min-duration: uint,
+    max-duration: uint,
+    encryption-fee: uint,
+    bandwidth-fee: uint,
+    active: bool
+  }
+)
