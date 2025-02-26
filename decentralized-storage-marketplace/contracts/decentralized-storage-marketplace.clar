@@ -275,3 +275,32 @@
     active: bool
   }
 )
+
+(define-public (create-pricing-tier 
+    (tier uint)
+    (name (string-utf8 32))
+    (base-price uint)
+    (size-multiplier uint)
+    (duration-multiplier uint)
+    (min-duration uint)
+    (max-duration uint)
+    (encryption-fee uint)
+    (bandwidth-fee uint))
+  (begin
+    (asserts! (var-get contract-enabled) err-unauthorized)
+    
+    (map-set pricing-tiers
+      { owner: tx-sender, tier: tier }
+      { 
+        name: name,
+        base-price: base-price,
+        size-multiplier: size-multiplier,
+        duration-multiplier: duration-multiplier,
+        min-duration: min-duration,
+        max-duration: max-duration,
+        encryption-fee: encryption-fee,
+        bandwidth-fee: bandwidth-fee,
+        active: true
+      })
+    (ok true)))
+
