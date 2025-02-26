@@ -84,3 +84,22 @@
             last-activity: stacks-block-height
           })))
     false))
+
+(define-private (is-listing-available (listing {
+    id: uint, 
+    owner: principal, 
+    price: uint, 
+    size: uint, 
+    duration: uint, 
+    rented: bool, 
+    renter: (optional principal), 
+    start-time: (optional uint), 
+    end-time: (optional uint),
+    proof: (optional (string-utf8 256)), 
+    rating: (optional uint),
+    location: (string-utf8 64),
+    availability: bool,
+    description: (string-utf8 256),
+    cancel-period: uint
+  }))
+  (and (not (get rented listing)) (get availability listing)))
